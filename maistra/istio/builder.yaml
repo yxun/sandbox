@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: example
+  labels:
+    app: builder
+  namespace: maistra-istio
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      name: builder
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: builder
+        image: quay.io/maistra-dev/maistra-builder:2.2
+        env:
+        - name: BUILD_WITH_CONTAINER
+          value: "0"
+        - name: GOFLAGS
+          value: "-mod=vendor"
+        - name: XDG_CACHE_HOME
+          value: "/tmp/cache"
+        - name: GOCACHE
+          value: "/tmp/cache"
+        command: ["/bin/bash"]
+        args: ["-c", "tail -f /dev/null"]
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "2"
+          requests:
+            memory: "1Gi"
+            cpu: "1"

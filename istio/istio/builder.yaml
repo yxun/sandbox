@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example
+  labels:
+    app: builder
+  namespace: istio-ci
+spec:
+  restartPolicy: Never
+  containers:
+    - name: builder
+      image: >-
+        gcr.io/istio-testing/build-tools:release-1.14-0c4413d13921234efc115a6acc7097c47de0e815
+      env:
+      - name: GOFLAGS
+        value: "-mod=vendor"
+      - name: BUILD_WITH_CONTAINER
+        value: "0"
+      - name: INTEGRATION_TEST_FLAGS
+        value: ' --istio.test.retries=1 '
+      command: ["/bin/bash"]
+      args: ["-c", "tail -f /dev/null"]
+      workingDir: /work
